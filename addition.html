@@ -1,0 +1,112 @@
+<!-- 
+    """" Practicing react, and how the useState works. """"
+
+    A simple game where the user will answer the sum of the two generated random number.
+    if the user answers correctly, the score will add up. if the user wrongly answer, it will deduct the score by 1.
+    the user will win the game if they will score 10.
+-->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+		<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+		<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <style>
+            #app {
+                text-align: center;
+                font-family: sans-serif;
+            }
+            #problem {
+                font-size: 72px;
+            }
+            .incorrect {
+                color: red
+            }
+
+            #winner {
+                font-size: 72px;
+                color: green;
+            }
+        </style>
+		<title>Addition</title>
+	</head>
+	<body>
+		<div id="app"></div>
+
+		<script type="text/babel">
+			
+		
+			function App() {
+
+                const [state, setState] = React.useState({
+                    num1:  Math.ceil(Math.random() * 10),
+                    num2:  Math.ceil(Math.random() * 10),
+                    response: "",
+                    score: 0,
+                    incorrect: false // to keep track if the user answers incorrectly,
+                                    // 
+                });
+
+                // check wether the inputted number is correct. by using an event handler when the 'enter' key is pressed.
+                function inputKeyPress(event) {
+                    if(event.key === "Enter") {
+                        const answer = parseInt(state.response);
+                        if (state.num1 + state.num2 === answer) {
+                            // user got question right
+                            setState({
+                                ...state,
+                                // if the user gets the question right, it will generate a random number every time, so the user will be
+                                // adding two random numbers together everytime get a new question right
+                                num1: Math.ceil(Math.random() * 10) ,
+                                num2: Math.ceil(Math.random() * 10) ,
+                                score: state.score + 1, // we are updating the state to increase the score by 1
+                                response: "", // to clear out the inputed number in the field whenever the user got the correct answer
+                                incorrect: false
+                            });
+
+                        } else {
+                            // user got question wrong
+                            setState({
+                                ...state,
+                                score: state.score - 1, // we are updating the state to decrease the score by 1
+                                response: "",
+                                incorrect: true
+                            });
+                    }
+
+                }
+            }
+
+                function updateResponse(event) {
+                    setState({
+                       ...state, // spread operator, means is just use the existing values of the state for everything else like num1 and num2, and the 
+                                // only thing to override is the new value for the response below.
+                                // it is just like saying i would like to update the state, everything should stay the same except for the response
+                        response: event.target.value
+                    });
+                }
+                // if the score is 10 
+                if (state.score === 10) {
+                    return(
+                        <div id="winner">
+                            You won!
+                        </div>
+                    );
+                }
+
+                return(
+                    <div>
+                        <div className={state.incorrect ? "incorrect" : ""} id="problem">{ state.num1} + { state.num2 }</div> 
+                        <input autoFocus={true} onKeyPress={inputKeyPress} onChange={updateResponse} value={state.response} />
+                        <div>Score: {state.score}</div>
+                    </div>
+                )
+			}
+			ReactDOM.render(<App />, document.querySelector('#app'));
+			
+		</script>
+			
+		
+	</body>
+
+</html>
